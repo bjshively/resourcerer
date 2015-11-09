@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if user %}
+
+<h2>You're signed in.</h2>
+
+{% else %}
+
+<h2>You aren't signed in.</h2>
+
+Click <a href="{{login}}">here</a> to log in.
+
+{% endif %}
+
+{% endblock %}
