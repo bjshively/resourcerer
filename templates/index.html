@@ -6,6 +6,15 @@
 
 <h2>You're signed in.</h2>
 
+{% for item in resources %}
+<h3>Name: {{item.title}}</h2>
+<p><strong>Description:</strong> {{item.description}}</p>
+<p>Type: {{item.resType}}</p>
+{{ item.key }}
+{% endfor %}
+
+<!--{{ resources }}-->
+
 {% else %}
 
 <h2>You aren't signed in.</h2>
