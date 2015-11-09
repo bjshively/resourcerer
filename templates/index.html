@@ -7,14 +7,15 @@
 <h2>You're signed in.</h2>
 
 {% for item in resources %}
-<h3>Name: {{item.title}}</h2>
+<h3>Name: {{item.title}}</h3>
 <p><strong>Description:</strong> {{item.description}}</p>
 <p>Type: {{item.resType}}</p>
-{{ item.key }}
+  {% if user %}
+  <a href="/createlease/{{item.urlkey}}">Lease this resource</a>
+  {% endif %}
 {% endfor %}
-
-<!--{{ resources }}-->
-
+{{ resources }}
+asgasgasg
 {% else %}
 
 <h2>You aren't signed in.</h2>

@@ -5,5 +5,13 @@
 }
 
 #container {
+  margin-left: auto;
+  margin-right: auto;
   padding: 2em;
+  max-width: 750px;
+}
+
+#header {
+  text-align: right;
+  border-bottom: 3px solid #000;
 }

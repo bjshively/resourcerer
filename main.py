@@ -2,6 +2,7 @@ import os
 import time
 import webapp2
 
+from datetime import datetime, timedelta
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from google.appengine.ext.webapp import template
@@ -42,6 +43,16 @@ class MainPage(webapp2.RequestHandler):
     """
     render_template(self, 'index.html', template_values)
 
+class CreateLease(webapp2.RequestHandler):
+  def get(self):
+    template_values = {}
+
+    render_template(self, 'createlease.html', template_values)
+
+class SaveLease(webapp2.RequestHandler):
+  def post(self):
+    return 1
+
 ######################################################################
 # DB objects
 ######################################################################
@@ -54,8 +65,9 @@ class Resource(ndb.Model):
 
   @classmethod
   def get_available_resources(cls):
-    # return cls.query(availability == 'true')
-    results = cls.query(cls.availability=='true').fetch()
+    """Returns a list of all available resources"""
+
+    # DEBUG/WIP
     """
     sortedRes = dict()
     for res in results:
@@ -65,17 +77,32 @@ class Resource(ndb.Model):
         sortedRes[res.resType].append(res)
     return sortedRes
     """
-    return cls.query(cls.availability=='true').fetch()
+    results = cls.query(cls.availability=='true').fetch()
+    records = []
+    for item in results:
+      d = {}
+      d['name'] = item.title
+      d['description'] = item.description
+      d['urlkey'] = item.key.urlsafe()
+      records.append(d)
+    return records
 
 class Lease(ndb.Model):
   """A lease that grants a user access to a resource for a period of time"""
-  owner = ndb.StringProperty()
-  resource = ndb.StringProperty()
+  owner = ndb.UserProperty()
+  resource = ndb.KeyProperty()
+  creation = ndb.DateTimeProperty(auto_now_add='True')
+  expiration = ndb.DateTimeProperty()
   
+  @classmethod
+  def get_expiration_time(cls):
+    """Returns the expiration time for a lease"""
+    return datetime.now() + timedelta(hours=2)
 
 ######################################################################
 # define routes and create the app
 ######################################################################
 app = webapp2.WSGIApplication([
-  ('/', MainPage)],
+  ('/', MainPage),
+  ('/createlease', CreateLease)],
   debug=True)
