@@ -26,7 +26,7 @@ def render_template(handler, templatename, template_values):
 
 
 class MainPage(webapp2.RequestHandler):
-
+    """View that lists currently available resources"""
     def get(self):
 
         Lease.check_leases()
@@ -48,7 +48,7 @@ class MainPage(webapp2.RequestHandler):
 
 
 class CreateLease(webapp2.RequestHandler):
-
+    """View that confirms registering a resource lease"""
     def get(self, resourceid):
         resource = Resource.get_by_id(int(resourceid))
         template_values = {
@@ -60,7 +60,7 @@ class CreateLease(webapp2.RequestHandler):
 
 
 class SaveLease(webapp2.RequestHandler):
-
+    """View that confirms lease save and provides resource access details"""
     def post(self):
         r = Resource.get_by_id(int(self.request.get('resourceid')))
         r.availability = 'leased'
@@ -72,16 +72,22 @@ class SaveLease(webapp2.RequestHandler):
                    expiration=Lease.get_expiration_time(),
                    active=True)
         l.put()
-        
+
         # self.response.write(r)
         # self.response.write(l)
         template_values = {'resource': r,
                            'lease': l}
         render_template(self, 'savelease.html', template_values)
 
+# TODO view lease handler
+class ViewLease(webapp2.RequestHandler):
+    """View the details of a lease"""
+    def get(self, leaseid):
+        lease = Lease.get_by_id(int(leaseid))
+        template_values = {}
 
 class CreateResource(webapp2.RequestHandler):
-
+    """View to enter new resources into the system"""
     def get(self):
         template_values = {}
         render_template(self, 'createresource.html', template_values)
@@ -100,7 +106,7 @@ class SaveResource(webapp2.RequestHandler):
         self.redirect('/')
 
 ######################################################################
-# DB objects
+# NDB Models
 ######################################################################
 
 
@@ -142,12 +148,12 @@ class Lease(ndb.Model):
         now = datetime.now()
         leases = cls.query(cls.active == True).fetch()
         for lease in leases:
-          if lease.expiration < now:
-            lease.active = False
-            lease.put()
-            r = Resource.get_by_id(lease.resource.id())
-            r.availability = 'true'
-            r.put()
+            if lease.expiration < now:
+                lease.active = False
+                lease.put()
+                r = Resource.get_by_id(lease.resource.id())
+                r.availability = 'true'
+                r.put()
 
     @classmethod
     def get_expiration_time(cls):
@@ -156,7 +162,7 @@ class Lease(ndb.Model):
 
 
 ######################################################################
-# define routes and create the app
+# Routes & App
 ######################################################################
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/', handler=MainPage, name='home'),

@@ -1,25 +1,17 @@
 {% extends 'base.html' %}
-
 {% block content %}
-
-{% if user %}
-
-<h2>Available Resources</h2>
-
-{% for item in resources %}
-<h3>Name: {{item.title}}</h3>
-<p><strong>Description:</strong> {{item.description}}</p>
-<p>Type: {{item.resType}}</p>
   {% if user %}
-  <a href="/createlease/{{item.urlkey}}">Lease this resource</a>
+    <h2>Available Resources</h2>
+    {% for item in resources %}
+      <h3>Name: {{item.title}}</h3>
+      <p><strong>Description:</strong> {{item.description}}</p>
+      <p>Type: {{item.resType}}</p>
+      {% if user %}
+        <a href="/createlease/{{item.urlkey}}">Lease this resource</a>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <h2>You aren't signed in.</h2>
+    Click <a href="{{login}}">here</a> to sign in.
   {% endif %}
-{% endfor %}
-{% else %}
-
-<h2>You aren't signed in.</h2>
-
-Click <a href="{{login}}">here</a> to sign in.
-
-{% endif %}
-
 {% endblock %}

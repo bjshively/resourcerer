@@ -1,21 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-
-<h2>Create a new resource</h2>
-<form method="post" action="/saveresource">
-  Resource Type: <select name="resType">
-  <option value="Server">Server</option>
-  <option value="Storage">Storage</option>
-  <option value="Image">Image</option>
-  </select><br><br>
-  Title:<br>
-  <input type="text" name="title"><br><br>
-
-  Description:<br>
-  <textarea rows="5" cols="80" name="description"></textarea><br><br>
-  Access:<br>
-  <input type="text" name="access"><br><br>
-  <input type="submit" value="Save Resource" class="btn btn-primary">
-</form>
-
+  <h2>Create a new resource</h2>
+  <form method="post" action="/saveresource">
+    Resource Type: <select name="resType">
+      <option value="Server">Server</option>
+      <option value="Storage">Storage</option>
+      <option value="Image">Image</option>
+    </select><br><br>
+    Title:<br>
+    <input type="text" name="title"><br><br>
+    Description:<br>
+    <textarea rows="5" cols="80" name="description"></textarea><br><br>
+    Access:<br>
+    <input type="text" name="access"><br><br>
+    <input type="submit" value="Save Resource" class="btn btn-primary">
+  </form>
 {% endblock %}
