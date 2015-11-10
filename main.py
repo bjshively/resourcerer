@@ -69,7 +69,8 @@ class SaveLease(webapp2.RequestHandler):
         l = Lease()
         l.populate(owner=users.get_current_user().user_id(),
                    resource=r.key,
-                   expiration=Lease.get_expiration_time(),)
+                   expiration=Lease.get_expiration_time(),
+                   active=True)
         l.put()
         
         # self.response.write(r)
@@ -133,15 +134,18 @@ class Lease(ndb.Model):
     resource = ndb.KeyProperty()
     creation = ndb.DateTimeProperty(auto_now_add='True')
     expiration = ndb.DateTimeProperty()
+    active = ndb.BooleanProperty()
 
     @classmethod
     def check_leases(cls):
         """Checks expiration of all leases and updates availability of resource for any expired lease"""
         now = datetime.now()
-        results = cls.query().fetch()
-        for result in results:
-          if result.expiration < now:
-            r = Resource.get_by_id(result.resource.id())
+        leases = cls.query(cls.active == True).fetch()
+        for lease in leases:
+          if lease.expiration < now:
+            lease.active = False
+            lease.put()
+            r = Resource.get_by_id(lease.resource.id())
             r.availability = 'true'
             r.put()
 
