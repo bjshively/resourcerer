@@ -10,7 +10,10 @@
 {% else %}
 
   {% if resource.availability == 'true' %}
+
     <p>The resource <strong>{{resource.title}} - {{resource.resType}}</strong> is available to lease.</p>
+    <p><strong>Description:</strong> {{resource.description}}</p>
+    <p><strong>Access Details:</strong> {{resource.access}}</p>
 
   {% else %}
   <p>Sorry, the resource <strong>{{resource.title}} - {{resource.resType}}</strong> isn't available.</p>

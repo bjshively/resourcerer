@@ -13,9 +13,9 @@ from webapp2_extras import routes
 ######################################################################
 
 
-def render_template(handler, templatename, templatevalues):
+def render_template(handler, templatename, template_values):
     path = os.path.join(os.path.dirname(__file__), 'templates/' + templatename)
-    html = template.render(path, templatevalues)
+    html = template.render(path, template_values)
     handler.response.out.write(html)
 
 ######################################################################
@@ -57,7 +57,6 @@ class CreateLease(webapp2.RequestHandler):
 
     def get(self, resourceid):
         resource = Resource.get_by_id(int(resourceid))
-
         template_values = {
             'resource': resource
         }
@@ -70,9 +69,26 @@ class SaveLease(webapp2.RequestHandler):
     def post(self):
         return 1
 
+class CreateResource(webapp2.RequestHandler):
+  def get(self):
+    template_values = {}
+    render_template(self, 'createresource.html', template_values)
+
+class SaveResource(webapp2.RequestHandler):
+  def post(self):
+    r = Resource()
+    r.populate(resType=self.request.get('resType'),
+      title=self.request.get('title'),
+      description=self.request.get('description'),
+      access=self.request.get('access'),
+      availability='true')
+    r.put()
+    self.redirect('/')
+
 ######################################################################
 # DB objects
 ######################################################################
+
 
 class Resource(ndb.Model):
     """A resource asset that can be leased by a user"""
@@ -80,6 +96,7 @@ class Resource(ndb.Model):
     title = ndb.StringProperty()
     description = ndb.StringProperty()
     availability = ndb.StringProperty()
+    access = ndb.StringProperty()
 
     @classmethod
     def get_available_resources(cls):
@@ -88,9 +105,10 @@ class Resource(ndb.Model):
         records = []
         for item in results:
             d = {}
+            d['resType'] = item.resType
             d['title'] = item.title
             d['description'] = item.description
-            d['resType'] = item.resType
+            d['access'] = item.access
             d['urlkey'] = item.key.id()
             records.append(d)
         return records
@@ -113,5 +131,7 @@ class Lease(ndb.Model):
 ######################################################################
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/', handler=MainPage, name='home'),
+    webapp2.Route(r'/saveresource', handler=SaveResource),
+    webapp2.Route(r'/createresource', handler=CreateResource),
     webapp2.Route(r'/createlease/<resourceid:\d+>', handler=CreateLease)],
     debug=True)
