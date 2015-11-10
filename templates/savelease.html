@@ -1,11 +1,8 @@
 {% extends 'base.html' %}
-
 {% block content %}
-
-<h2>Lease Created</h2>
-<p>You have successfully leased <strong>{{resource.title}}</strong>.</p>
-<p>You can access the resource using the following details:</p>
-{{resource.access}} <br><br>
-<p>Your lease will expire at: <strong>{{lease.expiration}} UTC</strong></p>
-
+  <h2>Lease Created</h2>
+  <p>You have successfully leased <strong>{{resource.title}}</strong>.</p>
+  <p><strong>Description:</strong> {{resource.description}}</p>
+  <p><strong>Access Details:</strong> {{resource.access}}</p>
+  <p>Your lease will expire at: <strong>{{lease.expiration}} UTC</strong></p>
 {% endblock %}

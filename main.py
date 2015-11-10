@@ -28,6 +28,9 @@ def render_template(handler, templatename, template_values):
 class MainPage(webapp2.RequestHandler):
 
     def get(self):
+
+        Lease.check_leases()
+
         user = users.get_current_user()
         login = users.create_login_url('/')
         logout = users.create_logout_url('/')
@@ -60,18 +63,21 @@ class SaveLease(webapp2.RequestHandler):
 
     def post(self):
         r = Resource.get_by_id(int(self.request.get('resourceid')))
+        r.availability = 'leased'
+        r.put()
+
         l = Lease()
         l.populate(owner=users.get_current_user().user_id(),
                    resource=r.key,
                    expiration=Lease.get_expiration_time(),)
-
-        #r.availability = 'false'
-        #r.put()
-        #self.response.write(r)
-        #self.response.write(l)
+        l.put()
+        
+        # self.response.write(r)
+        # self.response.write(l)
         template_values = {'resource': r,
-        'lease': l}
+                           'lease': l}
         render_template(self, 'savelease.html', template_values)
+
 
 class CreateResource(webapp2.RequestHandler):
 
@@ -129,9 +135,21 @@ class Lease(ndb.Model):
     expiration = ndb.DateTimeProperty()
 
     @classmethod
+    def check_leases(cls):
+        """Checks expiration of all leases and updates availability of resource for any expired lease"""
+        now = datetime.now()
+        results = cls.query().fetch()
+        for result in results:
+          if result.expiration < now:
+            r = Resource.get_by_id(result.resource.id())
+            r.availability = 'true'
+            r.put()
+
+    @classmethod
     def get_expiration_time(cls):
         """Returns the expiration time for a lease"""
-        return datetime.now() + timedelta(hours=2)
+        return datetime.now() + timedelta(minutes=5)
+
 
 ######################################################################
 # define routes and create the app
