@@ -1,25 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
-
-<h2>Lease a resource</h2>
-
-{% if not resource %}
-
-<p>Something went wrong. Please <a href='/'>return home</a> and start over.</p>
-
-{% else %}
-
-  {% if resource.availability == 'true' %}
-
-    <p>The resource <strong>{{resource.title}} - {{resource.resType}}</strong> is available to lease.</p>
-    <p><strong>Description:</strong> {{resource.description}}</p>
-    <p><strong>Access Details:</strong> {{resource.access}}</p>
-
+  <h2>Lease resource</h2>
+  {% if not resource %}
+    <p>Something went wrong. Please <a href='/'>return home</a> and start over.</p>
   {% else %}
-  <p>Sorry, the resource <strong>{{resource.title}} - {{resource.resType}}</strong> isn't available.</p>
-  <a href="/">Click here</a> to return home.
+    {% if resource.availability == 'true' %}
+      <p>The resource <strong>{{resource.title}} - {{resource.resType}}</strong> is available to lease.</p>
+      <p><strong>Description:</strong> {{resource.description}}</p>
+      <p><strong>Access Details:</strong> {{resource.access}}</p>
+      <div class="prompt">
+        <p>Would you like to lease this resource?</p>
+        <form method="post" action="/savelease">
+          <input type="hidden" name="resourceid" value="{{resourceid}}">
+          <input type="button" onclick="location.href='/';" value="Cancel" class="btn btn-danger"><input type="submit" value="Create Lease" class="btn btn-primary">
+        </form>
+      </div>
+    {% else %}
+      <p>Sorry, the resource <strong>{{resource.title}} - {{resource.resType}}</strong> isn't available.</p>
+      <a href="/">Click here</a> to return home.
+    {% endif %}
   {% endif %}
-
-{% endif %}
-
 {% endblock %}

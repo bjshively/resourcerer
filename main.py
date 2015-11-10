@@ -14,6 +14,8 @@ from webapp2_extras import routes
 
 
 def render_template(handler, templatename, template_values):
+    logout = users.create_logout_url('/')
+    template_values['logout'] = logout
     path = os.path.join(os.path.dirname(__file__), 'templates/' + templatename)
     html = template.render(path, template_values)
     handler.response.out.write(html)
@@ -31,25 +33,14 @@ class MainPage(webapp2.RequestHandler):
         logout = users.create_logout_url('/')
         resources = Resource.get_available_resources()
         homeurl = webapp2.uri_for('home')
-        test = Resource.get_by_id(5910974510923776)
 
         template_values = {
             'user': user,
             'login': login,
-            'logout': logout,
             'resources': resources,
             'homeurl': homeurl,
-            'test': test
         }
 
-        """
-    res = Resource()
-    res.resType = 'Server'
-    res.title = 'DonkeyKong'
-    res.description = 'An Ubuntu 14.04 server for all your computing needs.'
-    res.availability = 'true'
-    res.put()
-    """
         render_template(self, 'index.html', template_values)
 
 
@@ -58,7 +49,8 @@ class CreateLease(webapp2.RequestHandler):
     def get(self, resourceid):
         resource = Resource.get_by_id(int(resourceid))
         template_values = {
-            'resource': resource
+            'resource': resource,
+            'resourceid': resourceid
         }
 
         render_template(self, 'createlease.html', template_values)
@@ -67,23 +59,38 @@ class CreateLease(webapp2.RequestHandler):
 class SaveLease(webapp2.RequestHandler):
 
     def post(self):
-        return 1
+        r = Resource.get_by_id(int(self.request.get('resourceid')))
+        l = Lease()
+        l.populate(owner=users.get_current_user().user_id(),
+                   resource=r.key,
+                   expiration=Lease.get_expiration_time(),)
+
+        #r.availability = 'false'
+        #r.put()
+        #self.response.write(r)
+        #self.response.write(l)
+        template_values = {'resource': r,
+        'lease': l}
+        render_template(self, 'savelease.html', template_values)
 
 class CreateResource(webapp2.RequestHandler):
-  def get(self):
-    template_values = {}
-    render_template(self, 'createresource.html', template_values)
+
+    def get(self):
+        template_values = {}
+        render_template(self, 'createresource.html', template_values)
+
 
 class SaveResource(webapp2.RequestHandler):
-  def post(self):
-    r = Resource()
-    r.populate(resType=self.request.get('resType'),
-      title=self.request.get('title'),
-      description=self.request.get('description'),
-      access=self.request.get('access'),
-      availability='true')
-    r.put()
-    self.redirect('/')
+
+    def post(self):
+        r = Resource()
+        r.populate(resType=self.request.get('resType'),
+                   title=self.request.get('title'),
+                   description=self.request.get('description'),
+                   access=self.request.get('access'),
+                   availability='true')
+        r.put()
+        self.redirect('/')
 
 ######################################################################
 # DB objects
@@ -116,7 +123,7 @@ class Resource(ndb.Model):
 
 class Lease(ndb.Model):
     """A lease that grants a user access to a resource for a period of time"""
-    owner = ndb.UserProperty()
+    owner = ndb.StringProperty()
     resource = ndb.KeyProperty()
     creation = ndb.DateTimeProperty(auto_now_add='True')
     expiration = ndb.DateTimeProperty()
@@ -131,7 +138,8 @@ class Lease(ndb.Model):
 ######################################################################
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/', handler=MainPage, name='home'),
-    webapp2.Route(r'/saveresource', handler=SaveResource),
     webapp2.Route(r'/createresource', handler=CreateResource),
-    webapp2.Route(r'/createlease/<resourceid:\d+>', handler=CreateLease)],
+    webapp2.Route(r'/saveresource', handler=SaveResource),
+    webapp2.Route(r'/createlease/<resourceid:\d+>', handler=CreateLease),
+    webapp2.Route(r'/savelease', handler=SaveLease)],
     debug=True)

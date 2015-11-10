@@ -10,7 +10,7 @@
   <div id="header">
   <h1><a href="/">Resourcerer</a></h1>
   {% if user %}
-<p>Signed in as {{user}}</p>
+<p>Signed in as {{user}} | <a href="{{logout}}">Sign-out</a></p>
   {% endif %}
   </div>
     {% block content %}{% endblock %}
