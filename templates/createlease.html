@@ -3,4 +3,20 @@
 
 <h2>Lease a resource</h2>
 
+{% if not resource %}
+
+<p>Something went wrong. Please <a href='/'>return home</a> and start over.</p>
+
+{% else %}
+
+  {% if resource.availability == 'true' %}
+    <p>The resource <strong>{{resource.title}} - {{resource.resType}}</strong> is available to lease.</p>
+
+  {% else %}
+  <p>Sorry, the resource <strong>{{resource.title}} - {{resource.resType}}</strong> isn't available.</p>
+  <a href="/">Click here</a> to return home.
+  {% endif %}
+
+{% endif %}
+
 {% endblock %}
