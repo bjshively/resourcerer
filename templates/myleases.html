@@ -6,10 +6,15 @@
   <h2>Active Leases</h2>
   {% if leases %}
     {% for lease in leases %}
-      <p><strong>Lease {{lease.id}}</strong></p>
-      <p><strong>Resource:</strong> {{lease.resourceTitle}}</p>
+      <div class="panel panel-default">
+  <div class="panel-heading"><h3 class="panel-title">Lease {{lease.id}}</h3></div>
+  <div class="panel-body">
+        <p><strong>Resource:</strong> {{lease.resourceTitle}}</p>
       <p><strong>Created:</strong> {{lease.creation}}</p>
       <p><strong>Expires:</strong> {{lease.expiration}}</p>
+  </div>
+</div>
+
     {% endfor %}
   {% else %}
     <p>You have no active leases.</p>
