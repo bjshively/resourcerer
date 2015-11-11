@@ -18,7 +18,7 @@ In the MyLeases section of the app users can see all of their active leases, inc
 *Note: For demonstration purposes, all leases in this prototype environment are limited to 5 minutes in length. In a production deployment, a resource manager would specify the length of leases based on supply/demand as well as cost of resource.*
 
 ## Models
-Resourcerer relies on two primary models - Resources and Leases. Below are a list of the attributes r
+Resourcerer relies on two primary models - Resources and Leases. Below are a list of the attributes contained within each of these object types.
 
 ### Resources
 - resType - the type of resource
