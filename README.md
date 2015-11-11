@@ -8,7 +8,7 @@ Examples of resources that may be tracked in Resourcerer include:
   - Other hardware assets
 
 ## Access
-Resourcer is currently hosted at [bshivelyuber.appspot.com](http://bshivelyuber.appspot.com). You can sign into the system using any Google account.
+Resourcer is currently hosted at [bjshivelyuber.appspot.com](http://bjshivelyuber.appspot.com). You can sign into the system using any Google account.
 
 ## Use
 Upon signing in, you will be presented with a list of available resources. Each resource will include a link to create a temporary "lease", which grants you access to the resource for a specified period of time.
