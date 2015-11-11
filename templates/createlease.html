@@ -9,7 +9,7 @@
       <p><strong>Description:</strong> {{resource.description}}</p>
       <div class="prompt">
         <p>Would you like to lease this resource?</p>
-        <form method="post" action="/savelease">
+        <form method="post" action="{{leaselink}}">
           <input type="hidden" name="resourceid" value="{{resourceid}}">
           <input type="button" onclick="location.href='/';" value="Cancel" class="btn btn-danger"><input type="submit" value="Create Lease" class="btn btn-primary">
         </form>

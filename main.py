@@ -22,11 +22,13 @@ def render_template(handler, templatename, template_values):
 
     homelink = webapp2.uri_for('home')
     myleaseslink = webapp2.uri_for('myleases')
-    
+    leaselink = webapp2.uri_for('viewlease')
+
     template_values['logout'] = logout
     template_values['login'] = login
     template_values['homelink'] = homelink
     template_values['myleaseslink'] = myleaseslink
+    template_values['leaselink'] = leaselink
     template_values['user'] = user
 
     path = os.path.join(os.path.dirname(__file__), 'templates/' + templatename)
@@ -70,8 +72,9 @@ class MyLeases(webapp2.RequestHandler):
 
         for lease in leaseResults:
             l = lease.to_dict()
-            resourceTitle = Resource.get_by_id(lease.resource.id()).title
-            l['resourceTitle'] = resourceTitle
+            resource = Resource.get_by_id(lease.resource.id())
+            l['resourceTitle'] = resource.title
+            l['resourceAccess'] = resource.access
 
             if lease.active:
                 leases.append(l)
@@ -85,10 +88,10 @@ class MyLeases(webapp2.RequestHandler):
         render_template(self, 'myleases.html', template_values)
 
 
-class CreateLease(webapp2.RequestHandler):
-    """View that confirms registering a resource lease"""
+class LeasePage(webapp2.RequestHandler):
 
     def get(self, resourceid):
+        """View that confirms registering a resource lease"""
         resource = Resource.get_by_id(int(resourceid))
         template_values = {
             'resource': resource,
@@ -97,11 +100,8 @@ class CreateLease(webapp2.RequestHandler):
 
         render_template(self, 'createlease.html', template_values)
 
-
-class SaveLease(webapp2.RequestHandler):
-    """View that confirms lease save and provides resource access details"""
-
     def post(self):
+        """View that confirms lease save and provides resource access details"""
         r = Resource.get_by_id(int(self.request.get('resourceid')))
         if r.availability != 'true':
             error_message = 'The selected resource unavailable. Please try again later.'
@@ -123,12 +123,7 @@ class SaveLease(webapp2.RequestHandler):
             # self.response.write(l)
             template_values = {'resource': r,
                                'lease': l}
-            render_template(self, 'savelease.html', template_values)
-
-# TODO view lease handler
-
-# TODO email lease details
-
+            render_template(self, 'savelease.html', template_values)    
 
 class ViewLease(webapp2.RequestHandler):
     """View the details of a lease"""
@@ -138,16 +133,13 @@ class ViewLease(webapp2.RequestHandler):
         template_values = {}
 
 
-class CreateResource(webapp2.RequestHandler):
+class ResourcePage(webapp2.RequestHandler):
     """View to enter new resources into the system"""
 
     def get(self):
         check_login(self)
         template_values = {}
         render_template(self, 'createresource.html', template_values)
-
-
-class SaveResource(webapp2.RequestHandler):
 
     def post(self):
         r = Resource()
@@ -162,7 +154,6 @@ class SaveResource(webapp2.RequestHandler):
 ######################################################################
 # NDB Models
 ######################################################################
-
 
 class Resource(ndb.Model):
     """A resource asset that can be leased by a user"""
@@ -221,8 +212,7 @@ class Lease(ndb.Model):
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/', handler=MainPage, name='home'),
     webapp2.Route(r'/myleases', handler=MyLeases, name='myleases'),
-    webapp2.Route(r'/createresource', handler=CreateResource),
-    webapp2.Route(r'/saveresource', handler=SaveResource),
-    webapp2.Route(r'/createlease/<resourceid:\d+>', handler=CreateLease),
-    webapp2.Route(r'/savelease', handler=SaveLease)],
+    webapp2.Route(r'/resource', handler=ResourcePage),
+    webapp2.Route(r'/lease', handler=LeasePage, name='viewlease'),
+    webapp2.Route(r'/lease/<resourceid:\d+>', handler=LeasePage, name='lease')],
     debug=True)

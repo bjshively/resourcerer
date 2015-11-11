@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-<br>
-<br>
-<br>
   <h2>Active Leases</h2>
   {% if leases %}
     {% for lease in leases %}
@@ -12,6 +9,23 @@
         <p><strong>Resource:</strong> {{lease.resourceTitle}}</p>
       <p><strong>Created:</strong> {{lease.creation}}</p>
       <p><strong>Expires:</strong> {{lease.expiration}}</p>
+      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+      <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        <i class="fa fa-bars"></i> Access Details
+      </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+      <div class="panel-body">
+        {{lease.resourceAccess}}
+      </div>
+    </div>
+  </div>
+</div>
+
   </div>
 </div>
 

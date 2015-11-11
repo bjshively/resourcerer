@@ -7,7 +7,7 @@
       <p><strong>Description:</strong> {{item.description}}</p>
       <p>Type: {{item.resType}}</p>
       {% if user %}
-        <a href="/createlease/{{item.urlkey}}">Lease this resource</a>
+        <a href="{{leaselink}}/{{item.urlkey}}">Lease this resource</a>
       {% endif %}
     {% endfor %}
   {% else %}
