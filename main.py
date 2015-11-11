@@ -3,22 +3,39 @@ import time
 import webapp2
 
 from datetime import datetime, timedelta
+from google.appengine.api import mail
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from google.appengine.ext.webapp import template
 from webapp2_extras import routes
 
 ######################################################################
-# Helper function to render templates
+# Helper functions
 ######################################################################
 
-
 def render_template(handler, templatename, template_values):
+    """Render RequestHandler page template with the specified values"""
+    # Insert base template values
     logout = users.create_logout_url('/')
+    login = users.create_login_url('/')
+    user = users.get_current_user()
+
+    homelink = webapp2.uri_for('home')
+    myleaseslink = webapp2.uri_for('myleases')
+    
     template_values['logout'] = logout
+    template_values['login'] = login
+    template_values['homelink'] = homelink
+    template_values['myleaseslink'] = myleaseslink
+    template_values['user'] = user
+
     path = os.path.join(os.path.dirname(__file__), 'templates/' + templatename)
     html = template.render(path, template_values)
     handler.response.out.write(html)
+
+def check_login(handler):
+    if not (users.get_current_user()):
+        handler.redirect('/')
 
 ######################################################################
 # Page handlers
@@ -27,28 +44,50 @@ def render_template(handler, templatename, template_values):
 
 class MainPage(webapp2.RequestHandler):
     """View that lists currently available resources"""
+
     def get(self):
 
         Lease.check_leases()
-
-        user = users.get_current_user()
-        login = users.create_login_url('/')
-        logout = users.create_logout_url('/')
         resources = Resource.get_available_resources()
-        homeurl = webapp2.uri_for('home')
 
         template_values = {
-            'user': user,
-            'login': login,
-            'resources': resources,
-            'homeurl': homeurl,
+            'resources': resources
         }
 
         render_template(self, 'index.html', template_values)
 
 
+class MyLeases(webapp2.RequestHandler):
+
+    def get(self):
+        Lease.check_leases()
+        check_login(self)
+        
+        userid = users.get_current_user().user_id()
+        leaseResults = Lease.query(Lease.owner == userid).order(-Lease.creation).fetch()
+        leases = []
+        expiredLeases = []
+
+        for lease in leaseResults:
+            l = lease.to_dict()
+            resourceTitle = Resource.get_by_id(lease.resource.id()).title
+            l['resourceTitle'] = resourceTitle
+
+            if lease.active:
+                leases.append(l)
+            else:
+                expiredLeases.append(l)
+        template_values = {
+            'leases': leases,
+            'expiredLeases': expiredLeases
+        }
+
+        render_template(self, 'myleases.html', template_values)
+
+
 class CreateLease(webapp2.RequestHandler):
     """View that confirms registering a resource lease"""
+
     def get(self, resourceid):
         resource = Resource.get_by_id(int(resourceid))
         template_values = {
@@ -61,34 +100,49 @@ class CreateLease(webapp2.RequestHandler):
 
 class SaveLease(webapp2.RequestHandler):
     """View that confirms lease save and provides resource access details"""
+
     def post(self):
         r = Resource.get_by_id(int(self.request.get('resourceid')))
-        r.availability = 'leased'
-        r.put()
+        if r.availability != 'true':
+            error_message = 'The selected resource unavailable. Please try again later.'
+            template_values = {'error_message': error_message}
+            render_template(self, 'error.html', template_values)
 
-        l = Lease()
-        l.populate(owner=users.get_current_user().user_id(),
-                   resource=r.key,
-                   expiration=Lease.get_expiration_time(),
-                   active=True)
-        l.put()
+        else:
+            r.availability = 'leased'
+            r.put()
 
-        # self.response.write(r)
-        # self.response.write(l)
-        template_values = {'resource': r,
-                           'lease': l}
-        render_template(self, 'savelease.html', template_values)
+            l = Lease()
+            l.populate(owner=users.get_current_user().user_id(),
+                       resource=r.key,
+                       expiration=Lease.get_expiration_time(),
+                       active=True)
+            l.put()
+
+            # self.response.write(r)
+            # self.response.write(l)
+            template_values = {'resource': r,
+                               'lease': l}
+            render_template(self, 'savelease.html', template_values)
 
 # TODO view lease handler
+
+# TODO email lease details
+
+
 class ViewLease(webapp2.RequestHandler):
     """View the details of a lease"""
+
     def get(self, leaseid):
         lease = Lease.get_by_id(int(leaseid))
         template_values = {}
 
+
 class CreateResource(webapp2.RequestHandler):
     """View to enter new resources into the system"""
+
     def get(self):
+        check_login(self)
         template_values = {}
         render_template(self, 'createresource.html', template_values)
 
@@ -121,8 +175,8 @@ class Resource(ndb.Model):
     @classmethod
     def get_available_resources(cls):
         """Returns a list of all available resources"""
-        results = cls.query(cls.availability == 'true').fetch()
-        records = []
+        results = cls.query(cls.availability == 'true').order(Resource.resType).fetch()
+        resources = []
         for item in results:
             d = {}
             d['resType'] = item.resType
@@ -130,8 +184,8 @@ class Resource(ndb.Model):
             d['description'] = item.description
             d['access'] = item.access
             d['urlkey'] = item.key.id()
-            records.append(d)
-        return records
+            resources.append(d)
+        return resources
 
 
 class Lease(ndb.Model):
@@ -166,6 +220,7 @@ class Lease(ndb.Model):
 ######################################################################
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/', handler=MainPage, name='home'),
+    webapp2.Route(r'/myleases', handler=MyLeases, name='myleases'),
     webapp2.Route(r'/createresource', handler=CreateResource),
     webapp2.Route(r'/saveresource', handler=SaveResource),
     webapp2.Route(r'/createlease/<resourceid:\d+>', handler=CreateLease),

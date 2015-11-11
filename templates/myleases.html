@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<br>
+<br>
+<br>
+  <h2>Active Leases</h2>
+  {% if leases %}
+    {% for lease in leases %}
+      <p><strong>Lease {{lease.id}}</strong></p>
+      <p><strong>Resource:</strong> {{lease.resourceTitle}}</p>
+      <p><strong>Created:</strong> {{lease.creation}}</p>
+      <p><strong>Expires:</strong> {{lease.expiration}}</p>
+    {% endfor %}
+  {% else %}
+    <p>You have no active leases.</p>
+  {% endif %}
+
+  <h2>Expired Leases</h2>
+  {% if expiredLeases %}
+    {% for lease in expiredLeases %}
+      <p><strong>Expired Lease {{lease.id}}</strong> | <strong>Resource:</strong> {{lease.resourceTitle}} | <strong>Created:</strong> {{lease.creation}} | <strong>Expires:</strong> {{lease.expiration}}</p>
+    {% endfor %}
+  {% else %}
+    <p>You have no expired leases.</p>
+  {% endif %}
+
+{% endblock %}
