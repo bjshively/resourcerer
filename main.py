@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import webapp2
 
@@ -111,18 +112,15 @@ class LeasePage(webapp2.RequestHandler):
         else:
             r.availability = 'leased'
             r.put()
-
             l = Lease()
             l.populate(owner=users.get_current_user().user_id(),
                        resource=r.key,
                        expiration=Lease.get_expiration_time(),
                        active=True)
             l.put()
-
-            # self.response.write(r)
-            # self.response.write(l)
             template_values = {'resource': r,
                                'lease': l}
+            
             render_template(self, 'savelease.html', template_values)    
 
 class ViewLease(webapp2.RequestHandler):
