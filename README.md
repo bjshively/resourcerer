@@ -26,6 +26,7 @@ Resourcerer relies on two primary models - Resources and Leases. Below are a lis
 - description - a description of the resource
 - availability - availability state, i.e. true, leased, maintenance
 - access - access instructions such as IP, username, password, etc. 
+
 ### Leases
 - owner - the user to which the lease is granted
 - resource - the resource to which the lease applies
