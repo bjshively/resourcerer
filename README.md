@@ -46,5 +46,7 @@ The source code can be viewed on [github](http://github.com/bjshively/resourcere
 
 ## Author
 Developed by Bradley Shively
+
 bshively@gmail.com
+
 November 2015
