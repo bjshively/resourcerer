@@ -2,7 +2,11 @@
 {% block content %}
   <h2>Lease Created</h2>
   <p>You have successfully leased <strong>{{resource.title}}</strong>.</p>
-  <p><strong>Description:</strong> {{resource.description}}</p>
+  {% if resource.resType == 'Image' %}
+    <img src="{{resource.description}}">
+  {% else %}
+    <p><strong>Description:</strong> {{resource.description}}</p>
+  {% endif %}
   <p><strong>Access Details:</strong> {{resource.access}}</p>
   <p>Your lease will expire at: <strong>{{lease.expiration}} UTC</strong></p>
   <br><br>

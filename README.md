@@ -10,12 +10,21 @@ Examples of resources that may be tracked in Resourcerer include:
 ## Access
 Resourcer is currently hosted at [bjshivelyuber.appspot.com](http://bjshivelyuber.appspot.com). You can sign into the system using any Google account.
 
-## Use
-Upon signing in, you will be presented with a list of available resources. Each resource will include a link to create a temporary "lease", which grants you access to the resource for a specified period of time.
+## Usage
 
-In the MyLeases section of the app users can see all of their active leases, including access details for each resource. The bottom of the MyLeases view also includes a summary of all expired leases.
+### Leasing
+Upon signing in, you will be presented with a list of resources ordered by type. These are the resources that are currently available to lease. To lease a resource, click on the __Lease this resource__ link. You will be taken to a confirmation page. Click __Cancel__ to return home, or __Create Lease__ to reserve the resource.
+
+On the __My Leases__ page, you can see all of your active leases, as well as access details for each resource. The bottom of the MyLeases view also includes a summary of all previously expired leases.
 
 *Note: For demonstration purposes, all leases in this prototype environment are limited to 5 minutes in length. In a production deployment, a resource manager would specify the length of leases based on supply/demand as well as cost of resource.*
+
+### Creating Resources
+In addition to leasing resources, you can add new resources to the system, making them accessible to other users. To begin, click on __Add Resource__ in the navigation bar.
+
+You will be given a form to select a __Resource Type__, give the resource a __Title__ and __Description__ and to share any __Access Details__ such as IP, username, password, physical location, etc. Click __Save Resource__. You will be returned to the main resource list and your addition will appear.
+
+*Note: In the future it may make sense to define roles within the system and restrict creation of new resources to a subset of users such as Resource Managers. For now, this page is open to all users.*
 
 ## Models
 Resourcerer relies on two primary models - Resources and Leases. Below are lists of the attributes contained within each of these object types.

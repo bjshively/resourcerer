@@ -24,12 +24,14 @@ def render_template(handler, templatename, template_values):
     homelink = webapp2.uri_for('home')
     myleaseslink = webapp2.uri_for('myleases')
     leaselink = webapp2.uri_for('viewlease')
+    resourcelink = webapp2.uri_for('resource')
 
     template_values['logout'] = logout
     template_values['login'] = login
     template_values['homelink'] = homelink
     template_values['myleaseslink'] = myleaseslink
     template_values['leaselink'] = leaselink
+    template_values['resourcelink'] = resourcelink
     template_values['user'] = user
 
     path = os.path.join(os.path.dirname(__file__), 'templates/' + templatename)
@@ -37,6 +39,7 @@ def render_template(handler, templatename, template_values):
     handler.response.out.write(html)
 
 def check_login(handler):
+    """Check to see if the user is logged in and redirect if not"""
     if not (users.get_current_user()):
         handler.redirect('/')
 
@@ -47,7 +50,6 @@ def check_login(handler):
 
 class MainPage(webapp2.RequestHandler):
     """View that lists currently available resources"""
-
     def get(self):
 
         Lease.check_leases()
@@ -63,6 +65,7 @@ class MainPage(webapp2.RequestHandler):
 class MyLeases(webapp2.RequestHandler):
 
     def get(self):
+        """View that lists user's current leases and lease history"""
         Lease.check_leases()
         check_login(self)
         
@@ -121,25 +124,19 @@ class LeasePage(webapp2.RequestHandler):
             template_values = {'resource': r,
                                'lease': l}
             
-            render_template(self, 'savelease.html', template_values)    
-
-class ViewLease(webapp2.RequestHandler):
-    """View the details of a lease"""
-
-    def get(self, leaseid):
-        lease = Lease.get_by_id(int(leaseid))
-        template_values = {}
+            render_template(self, 'savelease.html', template_values)
 
 
 class ResourcePage(webapp2.RequestHandler):
-    """View to enter new resources into the system"""
 
     def get(self):
+        """View to enter new resources into the system"""
         check_login(self)
         template_values = {}
         render_template(self, 'createresource.html', template_values)
 
     def post(self):
+        """Save new resources and redirect user"""
         r = Resource()
         r.populate(resType=self.request.get('resType'),
                    title=self.request.get('title'),
@@ -210,7 +207,7 @@ class Lease(ndb.Model):
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/', handler=MainPage, name='home'),
     webapp2.Route(r'/myleases', handler=MyLeases, name='myleases'),
-    webapp2.Route(r'/resource', handler=ResourcePage),
+    webapp2.Route(r'/resource', handler=ResourcePage, name='resource'),
     webapp2.Route(r'/lease', handler=LeasePage, name='viewlease'),
     webapp2.Route(r'/lease/<resourceid:\d+>', handler=LeasePage, name='lease')],
     debug=True)
