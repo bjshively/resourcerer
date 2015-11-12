@@ -30,6 +30,8 @@ In addition to leasing resources, you can add new resources to the system, makin
 
 You will be given a form to select a __Resource Type__, give the resource a __Title__ and __Description__ and to share any __Access Details__ such as IP, username, password, physical location, etc. Click __Save Resource__. You will be returned to the main resource list and your addition will appear.
 
+![Add Resource page](http://bjshivelyuber.appspot.com/static/resourcererresourceth.png)
+
 *Note: In the future it may make sense to define roles within the system and restrict creation of new resources to a subset of users such as Resource Managers. For now, this page is open to all users.*
 
 ## Models
