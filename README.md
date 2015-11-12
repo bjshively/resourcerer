@@ -7,7 +7,7 @@ Examples of resources that may be tracked in Resourcerer include:
   - Storage
   - Other hardware assets
 
-![Main View](http://bjshivelyuber.appspot.com/static/resourcerermain.png)
+![Main page](http://bjshivelyuber.appspot.com/static/resourcerermain.png)
 
 ## Access
 Resourcer is currently hosted at [bjshivelyuber.appspot.com](http://bjshivelyuber.appspot.com). You can sign into the system using any Google account.
@@ -21,7 +21,7 @@ Upon signing in, you will be presented with a list of resources ordered by type.
 
 On the __My Leases__ page, you can see all of your active leases, as well as access details for each resource. Click on the bar icon next to __Access Details__ to reveal the details for any currently leased resource. The bottom of the MyLeases view also includes a summary of all previously expired leases.
 
-![My Leases](http://bjshivelyuber.appspot.com/static/resourcerermyleases.png)
+![My Leases page](http://bjshivelyuber.appspot.com/static/resourcerermyleases.png)
 
 *Note: For demonstration purposes, all leases in this prototype environment are limited to 5 minutes in length. In a production deployment, a resource manager would specify the length of leases based on supply/demand as well as cost of resource.*
 
